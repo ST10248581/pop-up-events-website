@@ -3,6 +3,7 @@ import { supabase } from './supabase'
 import Register from './Register'
 import Login from './Login'
 import AdminDashboard from './AdminDashboard'
+import VendorDashboard from './VendorDashboard'
 
 const events = [
   {
@@ -123,6 +124,16 @@ useEffect(() => {
 ) : user && userRole === 'admin' ? (
   <>
     <AdminDashboard />
+    <button
+      type="button"
+      onClick={() => supabase.auth.signOut()}
+    >
+      Log Out
+    </button>
+  </>
+) : user && userRole === 'vendor' ? (
+  <>
+    <VendorDashboard user={user} />
     <button
       type="button"
       onClick={() => supabase.auth.signOut()}
