@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import Register from './Register'
@@ -28,89 +29,89 @@ const events = [
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  
   const [user, setUser] = useState(null)
-const [userRole, setUserRole] = useState(null)
-const [checkingUser, setCheckingUser] = useState(true)
-  
-const [connectionStatus, setConnectionStatus] = useState('Checking connection...')
+  const [userRole, setUserRole] = useState(null)
+  const [checkingUser, setCheckingUser] = useState(true)
+  const [connectionStatus, setConnectionStatus] = useState('Checking connection...')
 
-useEffect(() => {
-  if (!supabase) {
-    setConnectionStatus('Supabase settings are missing')
-    setCheckingUser(false)
-    return
-  }
-
-  let mounted = true
-
- 
-async function checkUser(session) {
-  const currentUser = session?.user || null
-
-  if (!mounted) return
-
-  setUser(currentUser)
-  setUserRole(null)
-
-  if (currentUser) {
-    const { data, error } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', currentUser.id)
-      .single()
-
-    if (!mounted) return
-
-    if (error) {
-      console.error('Profile role lookup failed:', error)
-      setConnectionStatus('Could not load account role: ' + error.message)
-      setUserRole(null)
-    } else {
-      console.log('Account role:', data.role)
-      setUserRole(data.role)
-      setConnectionStatus('Connected as ' + data.role)
+  useEffect(() => {
+    if (!supabase) {
+      setConnectionStatus('Supabase settings are missing')
+      setCheckingUser(false)
+      return
     }
-  } else {
-    setConnectionStatus('Please log in to your account.')
-  }
 
-  if (mounted) setCheckingUser(false)
-}
-  
-  supabase.auth.getSession().then(({ data, error }) => {
-    if (!mounted) return
+    let mounted = true
 
-    setConnectionStatus(
-      error ? 'Connection failed' : 'Connected to Supabase'
-    )
+    async function checkUser(session) {
+      const currentUser = session?.user || null
 
-    checkUser(data.session)
-  })
-
-  const { data: { subscription } } =
-    supabase.auth.onAuthStateChange((_event, session) => {
       if (!mounted) return
 
-      setCheckingUser(true)
+      setUser(currentUser)
+      setUserRole(null)
 
-      setTimeout(() => {
-        checkUser(session)
-      }, 0)
+      if (currentUser) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .single()
+
+        if (!mounted) return
+
+        if (error) {
+          console.error('Profile role lookup failed:', error)
+          setConnectionStatus('Could not load account role: ' + error.message)
+          setUserRole(null)
+        } else {
+          console.log('Account role:', data.role)
+          setUserRole(data.role)
+          setConnectionStatus('Connected as ' + data.role)
+        }
+      } else {
+        setConnectionStatus('Please log in to your account.')
+      }
+
+      if (mounted) setCheckingUser(false)
+    }
+
+    const { data: { subscription } } =
+      supabase.auth.onAuthStateChange((_event, session) => {
+        if (!mounted) return
+
+        setCheckingUser(true)
+
+        setTimeout(() => {
+          checkUser(session)
+        }, 0)
+      })
+
+    supabase.auth.getSession().then(({ data, error }) => {
+      if (!mounted) return
+
+      if (error) {
+        console.error('Session error:', error)
+        setConnectionStatus('Could not check login session.')
+        setCheckingUser(false)
+        return
+      }
+
+      checkUser(data.session)
     })
 
-  return () => {
-    mounted = false
-    subscription.unsubscribe()
-  }
-}, [])
+    return () => {
+      mounted = false
+      subscription.unsubscribe()
+    }
+  }, [])
 
   return (
     <div className="website">
       <header className="header">
         <a href="#home" className="logo" aria-label="Pop Up Events home">
-  <img src="/logo.png" alt="Pop Up Events – Creating Moments & Memories" />
-</a>
+          <img src="/logo.png" alt="Pop Up Events – Creating Moments & Memories" />
+        </a>
 
         <button
           className="menu-button"
@@ -129,113 +130,126 @@ async function checkUser(session) {
         </nav>
       </header>
 
-      <main> 
+      <main>
         {checkingUser ? (
-  <div style={{ textAlign: 'center', padding: '10px' }}>
-  <p>{connectionStatus}</p>
-  <p>Logged-in user: {user?.email || 'None'}</p>
-  <p>Account role: {userRole || 'Not loaded'}</p>
-</div>
-) : user && userRole === 'admin' ? (
-  <>
-    <AdminDashboard />
-    <button
-      type="button"
-      onClick={() => supabase.auth.signOut()}
-    >
-      Log Out
-    </button>
-  </>
-) : user && userRole === 'vendor' ? (
-  <>
-    <VendorDashboard user={user} />
-    <button
-      type="button"
-      onClick={() => supabase.auth.signOut()}
-    >
-      Log Out
-    </button>
-  </>
-) : (
-  <>
-        
-        <p style={{ textAlign: 'center', padding: '10px' }}>
-  {connectionStatus}
-</p>
-        
-        <section className="hero" id="home">
-          <div className="hero-content">
-            <p className="eyebrow">WELCOME TO POP UP EVENTS</p>
-            <h1>Creating Moments <span>& Memories</span></h1>
-            <p className="hero-description">
-              Bringing people together through markets, celebrations,
-              family activities and unforgettable experiences.
-            </p>
-            <div className="hero-actions">
-              <a href="#events" className="primary-button">Explore Our Events</a>
-              <a href="#about" className="secondary-button">Discover More</a>
+          <p style={{ textAlign: 'center', padding: '20px' }}>
+            Checking account...
+          </p>
+        ) : user && userRole === 'admin' ? (
+          <>
+            <AdminDashboard />
+
+            <button
+              type="button"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Log Out
+            </button>
+          </>
+        ) : user && userRole === 'vendor' ? (
+          <>
+            <VendorDashboard user={user} />
+
+            <button
+              type="button"
+              onClick={() => supabase.auth.signOut()}
+            >
+              Log Out
+            </button>
+          </>
+        ) : (
+          <>
+            <div style={{ textAlign: 'center', padding: '10px' }}>
+              <p>{connectionStatus}</p>
+              <p>Logged-in user: {user?.email || 'None'}</p>
+              <p>Account role: {userRole || 'Not loaded'}</p>
             </div>
-          </div>
-          <div className="hero-decoration">
-            <span>Celebrate</span>
-            <span>Connect</span>
-            <span>Experience</span>
-          </div>
-        </section>
 
-        <section className="intro" id="about">
-          <p className="eyebrow">MORE THAN JUST AN EVENT</p>
-          <h2>Bringing people together</h2>
-          <p>
-            At Pop Up Events, we believe the best memories are made when
-            people come together. From vibrant markets to fun-filled
-            family days and special social occasions, there's always
-            something to look forward to.
-          </p>
-        </section>
+            <section className="hero" id="home">
+              <div className="hero-content">
+                <p className="eyebrow">WELCOME TO POP UP EVENTS</p>
 
-        <section className="events-section" id="events">
-          <div className="section-heading">
-            <p className="eyebrow">WHAT'S HAPPENING</p>
-            <h2>Discover Our Events</h2>
-            <p>There is something special waiting for everyone.</p>
-          </div>
+                <h1>
+                  Creating Moments <span>& Memories</span>
+                </h1>
 
-          <div className="event-grid">
-            {events.map((event) => (
-              <article className="event-card" key={event.name}>
-                <span className="event-category">{event.category}</span>
-                <h3>{event.name}</h3>
-                <p className="event-date">{event.date}</p>
-                <p>{event.description}</p>
-                <a href="#contact">Find Out More →</a>
-              </article>
-            ))}
-          </div>
-        </section>
+                <p className="hero-description">
+                  Bringing people together through markets, celebrations,
+                  family activities and unforgettable experiences.
+                </p>
 
-        <section className="join-section" id="join">
-          <p className="eyebrow">BE PART OF THE EXPERIENCE</p>
-          <h2>Join the Pop Up Events community</h2>
-          <p>
-            Whether you're attending an event or interested in becoming
-            a vendor, we'd love to have you involved.
-          </p>
-          <a href="#contact" className="primary-button">Get In Touch</a>
-        </section>
-<Login />
-         <Register />
+                <div className="hero-actions">
+                  <a href="#events" className="primary-button">
+                    Explore Our Events
+                  </a>
 
-        <section className="contact-section" id="contact">
-          <p className="eyebrow">LET'S CONNECT</p>
-          <h2>Stay in the loop</h2>
-          <p>Follow our journey and hear about upcoming events and opportunities.</p>
-          <a href="mailto:popupeventsdbn@gmail.com" className="contact-link">
-            popupeventsdbn@gmail.com
-          </a>
-        </section>
-      </>
-)}
+                  <a href="#about" className="secondary-button">
+                    Discover More
+                  </a>
+                </div>
+              </div>
+
+              <div className="hero-decoration">
+                <span>Celebrate</span>
+                <span>Connect</span>
+                <span>Experience</span>
+              </div>
+            </section>
+
+            <section className="intro" id="about">
+              <p className="eyebrow">MORE THAN JUST AN EVENT</p>
+              <h2>Bringing people together</h2>
+              <p>
+                At Pop Up Events, we believe the best memories are made when
+                people come together. From vibrant markets to fun-filled
+                family days and special social occasions, there's always
+                something to look forward to.
+              </p>
+            </section>
+
+            <section className="events-section" id="events">
+              <div className="section-heading">
+                <p className="eyebrow">WHAT'S HAPPENING</p>
+                <h2>Discover Our Events</h2>
+                <p>There is something special waiting for everyone.</p>
+              </div>
+
+              <div className="event-grid">
+                {events.map((event) => (
+                  <article className="event-card" key={event.name}>
+                    <span className="event-category">{event.category}</span>
+                    <h3>{event.name}</h3>
+                    <p className="event-date">{event.date}</p>
+                    <p>{event.description}</p>
+                    <a href="#contact">Find Out More →</a>
+                  </article>
+                ))}
+              </div>
+            </section>
+
+            <section className="join-section" id="join">
+              <p className="eyebrow">BE PART OF THE EXPERIENCE</p>
+              <h2>Join the Pop Up Events community</h2>
+              <p>
+                Whether you're attending an event or interested in becoming
+                a vendor, we'd love to have you involved.
+              </p>
+              <a href="#contact" className="primary-button">Get In Touch</a>
+            </section>
+
+            <Login />
+            <Register />
+
+            <section className="contact-section" id="contact">
+              <p className="eyebrow">LET'S CONNECT</p>
+              <h2>Stay in the loop</h2>
+              <p>Follow our journey and hear about upcoming events and opportunities.</p>
+              <a href="mailto:popupeventsdbn@gmail.com" className="contact-link">
+                popupeventsdbn@gmail.com
+              </a>
+            </section>
+          </>
+        )}
       </main>
 
       <footer className="footer">
