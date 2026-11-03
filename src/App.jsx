@@ -27,10 +27,9 @@ export default function App() {
   return (
     <div className="website">
       <header className="header">
-        <a href="#home" className="logo">
-          <span>Pop Up</span>
-          <small>EVENTS</small>
-        </a>
+        <a href="#home" className="logo" aria-label="Pop Up Events home">
+  <img src="/logo.png" alt="Pop Up Events – Creating Moments & Memories" />
+</a>
 
         <button
           className="menu-button"
