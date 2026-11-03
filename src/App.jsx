@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import Register from './Register'
+import Login from './Login'
 
 const events = [
   {
@@ -59,6 +60,7 @@ useEffect(() => {
           <a href="#about" onClick={() => setMenuOpen(false)}>About Us</a>
           <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
           <a href="#register" className="nav-button" onClick={() => setMenuOpen(false)}>Join Us</a>
+          <a href="#login" onClick={() => setMenuOpen(false)}>Log In</a>
         </nav>
       </header>
 
@@ -128,7 +130,7 @@ useEffect(() => {
           </p>
           <a href="#contact" className="primary-button">Get In Touch</a>
         </section>
-
+<Login />
          <Register />
 
         <section className="contact-section" id="contact">
