@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 
 const events = [
@@ -24,7 +24,20 @@ const events = [
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+const [connectionStatus, setConnectionStatus] = useState('Checking connection...')
 
+useEffect(() => {
+  if (!supabase) {
+    setConnectionStatus('Supabase settings are missing')
+    return
+  }
+
+  supabase.auth.getSession()
+    .then(({ error }) => {
+      setConnectionStatus(error ? 'Connection failed' : 'Connected to Supabase')
+    })
+    .catch(() => setConnectionStatus('Connection failed'))
+}, [])
   return (
     <div className="website">
       <header className="header">
@@ -48,7 +61,11 @@ export default function App() {
         </nav>
       </header>
 
-      <main>
+      <main> 
+        <p style={{ textAlign: 'center', padding: '10px' }}>
+  {connectionStatus}
+</p>
+        
         <section className="hero" id="home">
           <div className="hero-content">
             <p className="eyebrow">WELCOME TO POP UP EVENTS</p>
