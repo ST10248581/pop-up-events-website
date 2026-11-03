@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { supabase } from './supabase'
 
@@ -8,6 +9,13 @@ export default function Register() {
   const [phone, setPhone] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+
+  const [businessName, setBusinessName] = useState('')
+  const [contactName, setContactName] = useState('')
+  const [businessEmail, setBusinessEmail] = useState('')
+  const [businessPhone, setBusinessPhone] = useState('')
+  const [description, setDescription] = useState('')
+
   const [message, setMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
@@ -32,25 +40,40 @@ export default function Register() {
 
     setLoading(true)
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin,
-        data: {
-          full_name: fullName,
-          phone,
-          account_type: accountType,
+    try {
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin,
+          data: {
+            full_name: fullName,
+            phone,
+            account_type: accountType,
+            ...(accountType === 'vendor' && {
+              business_name: businessName,
+              contact_name: contactName,
+              business_email: businessEmail,
+              business_phone: businessPhone,
+              business_description: description,
+            }),
+          },
         },
-      },
-    })
+      })
 
-    setLoading(false)
-
-    if (error) {
-      setMessage(error.message)
-    } else {
-      setMessage('Registration received! Please check your email to verify your account.')
+      if (error) {
+        setMessage(error.message)
+      } else {
+        setMessage(
+          accountType === 'vendor'
+            ? 'Registration received! Please check your email to verify your account. Your vendor application will be reviewed.'
+            : 'Registration received! Please check your email to verify your account.'
+        )
+      }
+    } catch {
+      setMessage('Something went wrong. Please try again.')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -63,6 +86,7 @@ export default function Register() {
 
         <form onSubmit={handleRegister}>
           <label>Account Type</label>
+
           <div className="account-options">
             <button
               type="button"
@@ -71,6 +95,7 @@ export default function Register() {
             >
               Customer
             </button>
+
             <button
               type="button"
               className={accountType === 'vendor' ? 'selected' : ''}
@@ -103,11 +128,65 @@ export default function Register() {
             required
           />
 
+          {accountType === 'vendor' && (
+            <>
+              <hr />
+
+              <p className="eyebrow">VENDOR BUSINESS DETAILS</p>
+
+              <label>Business Name</label>
+              <input
+                value={businessName}
+                onChange={(e) => setBusinessName(e.target.value)}
+                required
+              />
+
+              <label>Contact Person</label>
+              <input
+                value={contactName}
+                onChange={(e) => setContactName(e.target.value)}
+                required
+              />
+
+              <label>Business Email</label>
+              <input
+                type="email"
+                value={businessEmail}
+                onChange={(e) => setBusinessEmail(e.target.value)}
+                required
+              />
+
+              <label>Business Phone</label>
+              <input
+                type="tel"
+                value={businessPhone}
+                onChange={(e) => setBusinessPhone(e.target.value)}
+                required
+              />
+
+              <label>Tell us about your business and products</label>
+              <textarea
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                rows="4"
+                required
+              />
+
+              <p>
+                Your vendor application will be reviewed before vendor
+                access is granted.
+              </p>
+
+              <hr />
+            </>
+          )}
+
           <label>Password</label>
           <input
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            minLength={8}
             required
           />
 
@@ -116,6 +195,7 @@ export default function Register() {
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            minLength={8}
             required
           />
 
@@ -129,3 +209,4 @@ export default function Register() {
     </section>
   )
 }
+
