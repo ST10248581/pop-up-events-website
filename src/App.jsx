@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from './supabase'
 import Register from './Register'
 import Login from './Login'
+import AdminDashboard from './AdminDashboard'
 
 const events = [
   {
@@ -26,19 +27,69 @@ const events = [
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
+  
+  const [user, setUser] = useState(null)
+const [userRole, setUserRole] = useState(null)
+const [checkingUser, setCheckingUser] = useState(true)
+  
 const [connectionStatus, setConnectionStatus] = useState('Checking connection...')
 
 useEffect(() => {
   if (!supabase) {
     setConnectionStatus('Supabase settings are missing')
+    setCheckingUser(false)
     return
   }
 
-  supabase.auth.getSession()
-    .then(({ error }) => {
-      setConnectionStatus(error ? 'Connection failed' : 'Connected to Supabase')
+  let mounted = true
+
+  async function checkUser(session) {
+    const currentUser = session?.user || null
+
+    setUser(currentUser)
+    setUserRole(null)
+
+    if (currentUser) {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', currentUser.id)
+        .single()
+
+      if (mounted) {
+        setUserRole(error ? null : data.role)
+      }
+    }
+
+    if (mounted) setCheckingUser(false)
+  }
+
+  supabase.auth.getSession().then(({ data, error }) => {
+    if (!mounted) return
+
+    setConnectionStatus(
+      error ? 'Connection failed' : 'Connected to Supabase'
+    )
+
+    checkUser(data.session)
+  })
+
+  const { data: { subscription } } =
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (!mounted) return
+
+      setCheckingUser(true)
+
+      setTimeout(() => {
+        checkUser(session)
+      }, 0)
     })
-    .catch(() => setConnectionStatus('Connection failed'))
+
+  return () => {
+    mounted = false
+    subscription.unsubscribe()
+  }
+}, [])
 }, [])
   return (
     <div className="website">
@@ -65,6 +116,22 @@ useEffect(() => {
       </header>
 
       <main> 
+        {checkingUser ? (
+  <p style={{ textAlign: 'center', padding: '20px' }}>
+    Checking account...
+  </p>
+) : user && userRole === 'admin' ? (
+  <>
+    <AdminDashboard />
+    <button
+      type="button"
+      onClick={() => supabase.auth.signOut()}
+    >
+      Log Out
+    </button>
+  </>
+) : (
+  <>
         
         <p style={{ textAlign: 'center', padding: '10px' }}>
   {connectionStatus}
@@ -141,6 +208,8 @@ useEffect(() => {
             popupeventsdbn@gmail.com
           </a>
         </section>
+      </>
+)}
       </main>
 
       <footer className="footer">
