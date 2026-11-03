@@ -9,8 +9,8 @@ export default function Login() {
   const [loading, setLoading] = useState(false)
 
   async function handleLogin(e) {
-    e.preventDefault()
-    setMessage('')
+  e.preventDefault()
+  setMessage('Login button clicked. Checking details...')
 
     if (!supabase) {
       setMessage('Login is temporarily unavailable.')
