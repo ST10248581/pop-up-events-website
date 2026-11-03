@@ -63,6 +63,8 @@ useEffect(() => {
       </header>
 
       <main> 
+        <Register />
+        
         <p style={{ textAlign: 'center', padding: '10px' }}>
   {connectionStatus}
 </p>
