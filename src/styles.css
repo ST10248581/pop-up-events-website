@@ -347,3 +347,88 @@ a {
     font-size: 34px;
   }
 }
+/* Registration form */
+
+.register-page {
+  background: #FAF8F5;
+  padding: 60px 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.register-card {
+  background: white;
+  width: 100%;
+  max-width: 520px;
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+}
+
+.register-card h1 {
+  color: #0F4D4A;
+  margin-bottom: 10px;
+}
+
+.register-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.register-card label {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+.register-card input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.account-options {
+  display: flex;
+  gap: 12px;
+}
+
+.account-options button {
+  flex: 1;
+  padding: 13px;
+  border: 1px solid #0F4D4A;
+  border-radius: 8px;
+  background: white;
+  color: #0F4D4A;
+  cursor: pointer;
+}
+
+.account-options button.selected {
+  background: #0F4D4A;
+  color: white;
+}
+
+.register-card form button[type="submit"] {
+  background: #0F4D4A;
+  color: white;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
+}
+
+.register-message {
+  margin-top: 20px;
+  color: #0F4D4A;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .register-card {
+    padding: 25px 20px;
+  }
+}
