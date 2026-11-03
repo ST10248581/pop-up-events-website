@@ -38,7 +38,7 @@ export default function Login() {
   }
 
   return (
-    <section className="register-page">
+    <section className="register-page" id="login">
       <div className="register-card">
         <p className="eyebrow">WELCOME BACK</p>
         <h1>Log In</h1>
