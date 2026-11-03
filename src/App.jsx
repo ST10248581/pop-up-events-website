@@ -90,7 +90,7 @@ useEffect(() => {
     subscription.unsubscribe()
   }
 }, [])
-}, [])
+
   return (
     <div className="website">
       <header className="header">
