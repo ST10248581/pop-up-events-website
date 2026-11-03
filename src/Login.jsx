@@ -10,32 +10,37 @@ export default function Login() {
 
   async function handleLogin(e) {
   e.preventDefault()
-  setMessage('Login button clicked. Checking details...')
+  setMessage('Connecting to Supabase...')
+  setLoading(true)
 
+  try {
     if (!supabase) {
-      setMessage('Login is temporarily unavailable.')
+      setMessage('Supabase connection is missing.')
       return
     }
 
-    setLoading(true)
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    })
 
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) {
-        setMessage(error.message)
-      } else {
-        setMessage('You have successfully logged in!')
-      }
-    } catch {
-      setMessage('Something went wrong. Please try again.')
-    } finally {
-      setLoading(false)
+    if (error) {
+      setMessage('Login failed: ' + error.message)
+      return
     }
+
+    if (data.user) {
+      setMessage('Login successful! Loading your account...')
+    } else {
+      setMessage('Login response received, but no user was returned.')
+    }
+
+  } catch (error) {
+    setMessage('Unexpected error: ' + error.message)
+  } finally {
+    setLoading(false)
   }
+}
 
   return (
     <section className="register-page" id="login">
