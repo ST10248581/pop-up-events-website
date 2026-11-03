@@ -67,7 +67,6 @@ async function checkUser(session) {
       setConnectionStatus('Could not load account role: ' + error.message)
       setUserRole(null)
     } else {
-      console.log('Logged-in user:', currentUser.email)
       console.log('Account role:', data.role)
       setUserRole(data.role)
       setConnectionStatus('Connected as ' + data.role)
@@ -78,7 +77,7 @@ async function checkUser(session) {
 
   if (mounted) setCheckingUser(false)
 }
-
+  
   supabase.auth.getSession().then(({ data, error }) => {
     if (!mounted) return
 
