@@ -55,7 +55,7 @@ export default function Register() {
   }
 
   return (
-    <section className="register-page">
+    <section className="register-page" id="register">
       <div className="register-card">
         <p className="eyebrow">JOIN OUR COMMUNITY</p>
         <h1>Create Your Account</h1>
