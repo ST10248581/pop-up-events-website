@@ -63,7 +63,6 @@ useEffect(() => {
       </header>
 
       <main> 
-        <Register />
         
         <p style={{ textAlign: 'center', padding: '10px' }}>
   {connectionStatus}
@@ -120,7 +119,7 @@ useEffect(() => {
           </div>
         </section>
 
-        <section className="join-section" id="register">
+        <section className="join-section" id="join">
           <p className="eyebrow">BE PART OF THE EXPERIENCE</p>
           <h2>Join the Pop Up Events community</h2>
           <p>
@@ -129,6 +128,8 @@ useEffect(() => {
           </p>
           <a href="#contact" className="primary-button">Get In Touch</a>
         </section>
+
+         <Register />
 
         <section className="contact-section" id="contact">
           <p className="eyebrow">LET'S CONNECT</p>
