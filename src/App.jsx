@@ -131,9 +131,11 @@ async function checkUser(session) {
 
       <main> 
         {checkingUser ? (
-  <p style={{ textAlign: 'center', padding: '20px' }}>
-    Checking account...
-  </p>
+  <div style={{ textAlign: 'center', padding: '10px' }}>
+  <p>{connectionStatus}</p>
+  <p>Logged-in user: {user?.email || 'None'}</p>
+  <p>Account role: {userRole || 'Not loaded'}</p>
+</div>
 ) : user && userRole === 'admin' ? (
   <>
     <AdminDashboard />
