@@ -44,26 +44,40 @@ useEffect(() => {
 
   let mounted = true
 
-  async function checkUser(session) {
-    const currentUser = session?.user || null
+ 
+async function checkUser(session) {
+  const currentUser = session?.user || null
 
-    setUser(currentUser)
-    setUserRole(null)
+  if (!mounted) return
 
-    if (currentUser) {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', currentUser.id)
-        .single()
+  setUser(currentUser)
+  setUserRole(null)
 
-      if (mounted) {
-        setUserRole(error ? null : data.role)
-      }
+  if (currentUser) {
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', currentUser.id)
+      .single()
+
+    if (!mounted) return
+
+    if (error) {
+      console.error('Profile role lookup failed:', error)
+      setConnectionStatus('Could not load account role: ' + error.message)
+      setUserRole(null)
+    } else {
+      console.log('Logged-in user:', currentUser.email)
+      console.log('Account role:', data.role)
+      setUserRole(data.role)
+      setConnectionStatus('Connected as ' + data.role)
     }
-
-    if (mounted) setCheckingUser(false)
+  } else {
+    setConnectionStatus('Please log in to your account.')
   }
+
+  if (mounted) setCheckingUser(false)
+}
 
   supabase.auth.getSession().then(({ data, error }) => {
     if (!mounted) return
