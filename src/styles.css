@@ -432,3 +432,109 @@ a {
     padding: 25px 20px;
   }
 }
+
+/* Logged-in header & dashboards */
+
+.nav button.nav-button {
+  border: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.nav-user {
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #666;
+  font-weight: 500;
+}
+
+.status-message {
+  text-align: center;
+  padding: 60px 20px;
+  color: #666;
+}
+
+.register-card textarea {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 16px;
+  resize: vertical;
+}
+
+.vendor-dashboard form button[type="submit"],
+.admin-dashboard > button,
+.admin-actions button {
+  background: #0F4D4A;
+  color: white;
+  padding: 13px 20px;
+  border: none;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.vendor-dashboard form button[type="submit"]:hover,
+.admin-dashboard > button:hover,
+.admin-actions button:hover {
+  background: #D4AF37;
+  color: #333;
+}
+
+.vendor-dashboard form button[type="submit"] {
+  margin-top: 15px;
+}
+
+.admin-dashboard {
+  max-width: 760px;
+}
+
+.admin-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.admin-actions button:last-child {
+  background: white;
+  color: #8B2E3C;
+  border: 1px solid #8B2E3C;
+}
+
+.admin-actions button:last-child:hover {
+  background: #8B2E3C;
+  color: white;
+}
+
+.admin-actions button:disabled,
+.vendor-dashboard form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vendor-dashboard form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.vendor-dashboard label {
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+@media (max-width: 800px) {
+  .nav-user {
+    max-width: none;
+  }
+
+  .nav button.nav-button {
+    text-align: center;
+  }
+}

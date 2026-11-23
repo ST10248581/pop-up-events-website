@@ -48,75 +48,81 @@ export default function VendorDashboard({ user }) {
     )
   }
 
-  if (loading) return <p>Loading your business profile...</p>
+  if (loading) return <p className="status-message">Loading your business profile...</p>
 
   if (!profile) {
     return (
-      <div className="vendor-dashboard">
-        <h1>Vendor Dashboard</h1>
-        <p>{message || 'Your vendor profile could not be found.'}</p>
-      </div>
+      <section className="register-page">
+        <div className="register-card vendor-dashboard">
+          <p className="eyebrow">POP UP EVENTS</p>
+          <h1>Vendor Dashboard</h1>
+          <p>{message || 'Your vendor profile could not be found.'}</p>
+        </div>
+      </section>
     )
   }
 
   return (
-    <div className="vendor-dashboard">
-      <h1>Welcome to your Vendor Dashboard</h1>
-      <p>Manage your business details below.</p>
+    <section className="register-page">
+      <div className="register-card vendor-dashboard">
+        <p className="eyebrow">POP UP EVENTS</p>
+        <h1>Welcome to your Vendor Dashboard</h1>
+        <p>Manage your business details below.</p>
 
-      <form onSubmit={saveProfile}>
-        <label>Business name</label>
-        <input
-          value={profile.business_name || ''}
-          onChange={e => setProfile({
-            ...profile,
-            business_name: e.target.value
-          })}
-          required
-        />
+        <form onSubmit={saveProfile}>
+          <label>Business name</label>
+          <input
+            value={profile.business_name || ''}
+            onChange={e => setProfile({
+              ...profile,
+              business_name: e.target.value
+            })}
+            required
+          />
 
-        <label>Contact person</label>
-        <input
-          value={profile.contact_name || ''}
-          onChange={e => setProfile({
-            ...profile,
-            contact_name: e.target.value
-          })}
-        />
+          <label>Contact person</label>
+          <input
+            value={profile.contact_name || ''}
+            onChange={e => setProfile({
+              ...profile,
+              contact_name: e.target.value
+            })}
+          />
 
-        <label>Business email</label>
-        <input
-          type="email"
-          value={profile.email || ''}
-          onChange={e => setProfile({
-            ...profile,
-            email: e.target.value
-          })}
-        />
+          <label>Business email</label>
+          <input
+            type="email"
+            value={profile.email || ''}
+            onChange={e => setProfile({
+              ...profile,
+              email: e.target.value
+            })}
+          />
 
-        <label>Business phone</label>
-        <input
-          value={profile.phone || ''}
-          onChange={e => setProfile({
-            ...profile,
-            phone: e.target.value
-          })}
-        />
+          <label>Business phone</label>
+          <input
+            value={profile.phone || ''}
+            onChange={e => setProfile({
+              ...profile,
+              phone: e.target.value
+            })}
+          />
 
-        <label>Business description</label>
-        <textarea
-          value={profile.description || ''}
-          onChange={e => setProfile({
-            ...profile,
-            description: e.target.value
-          })}
-          rows="4"
-        />
+          <label>Business description</label>
+          <textarea
+            value={profile.description || ''}
+            onChange={e => setProfile({
+              ...profile,
+              description: e.target.value
+            })}
+            rows="4"
+          />
 
-        <button type="submit">Save Business Profile</button>
-      </form>
+          <button type="submit">Save Business Profile</button>
+        </form>
 
-      {message && <p>{message}</p>}
-    </div>
+        {message && <p className="register-message">{message}</p>}
+      </div>
+    </section>
   )
 }

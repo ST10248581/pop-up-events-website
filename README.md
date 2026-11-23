@@ -15,7 +15,7 @@ Steps to get the site running and finish the brief. The tasks run from the quick
 
 - [ ] 1. Get admin access to the client's Supabase project (Owner or Developer role).
 - [ ] 2. In Supabase, open **Project Settings → API** and copy the Project URL and the anon key.
-- [ ] 3. Move `src/.env.example` to the project root and rename the copy to `.env`. Fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+- [ ] 3. Copy `.env.example` (now in the project root) to `.env`. Fill in `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 - [ ] 4. Make sure `.env` is listed in `.gitignore`.
 - [ ] 5. Run `npm install`.
 - [ ] 6. Export the existing database schema, for example with `npx supabase db dump --schema public > supabase/schema.sql`, and commit it so the database is tracked in the repo.
@@ -25,30 +25,33 @@ Steps to get the site running and finish the brief. The tasks run from the quick
 ## Phase 1: Fix what's broken (quick wins, under 1 day)
 
 ### 1.1 Fix the build-breaking syntax error (5 min)
-- [ ] In `src/AdminDashboard.jsx`, replace lines 35–45 with one call:
+- [x] In `src/AdminDashboard.jsx`, replace lines 35–45 with one call:
   ```js
-  const { data, error } = await supabase.rpc('review_vendor_application', {
+  const { error } = await supabase.rpc('review_vendor_application', {
     application_id: id,
     decision,
     notes: notes[id] || null,
   })
   ```
-- [ ] Remove the `console.log` on line 45.
-- [ ] Run `npm run build` and confirm it passes.
-- [ ] Run `npm run dev` and confirm the homepage loads.
+- [x] Remove the `console.log` on line 45.
+- [x] Run `npm run build` and confirm it passes.
+- [x] Run `npm run dev` and confirm the homepage loads.
 
 ### 1.2 Remove debug output from the homepage (5 min)
-- [ ] Delete the "Logged-in user / Account role" block in `src/App.jsx` (around lines 162–166).
+- [x] Delete the "Logged-in user / Account role" block in `src/App.jsx` (around lines 162–166), along with the unused `connectionStatus` state.
 
 ### 1.3 Small cleanups (15 min)
-- [ ] Run `npm uninstall lucide-react`, or start using it for icons.
-- [ ] Delete the unused duplicate logo file.
-- [ ] Point the "Find Out More" event buttons somewhere real. Use a placeholder for now until Phase 3.
+- [x] Run `npm uninstall lucide-react`, or start using it for icons.
+- [x] Fix the logo: `public/logo.png` was an empty 2-byte file, so the real logo was copied over it and the duplicate `Pop up events logo.png` was deleted.
+- [x] Point the "Find Out More" event buttons somewhere real. For now they open an email enquiry with the event name in the subject, until Phase 3.
+- [x] Move `.env.example` from `src/` to the project root.
 
 ### 1.4 Logout & navigation (1–2 hrs)
-- [ ] Add a styled logout button to a shared header that shows whenever a user is logged in.
-- [ ] Fix the admin and vendor dashboard nav links so they no longer point at hidden sections.
-- [ ] Hide the Login and Register forms once the user is logged in.
+- [x] Add a styled logout button to a shared header that shows whenever a user is logged in.
+- [x] Fix the admin and vendor dashboard nav links so they no longer point at hidden sections.
+- [x] Hide the Login and Register forms once the user is logged in.
+- [x] Style the vendor and admin dashboards to match the site (cards, buttons, text areas).
+- [ ] Test all of the above with real admin, vendor and customer accounts once Supabase is connected (Phase 0).
 
 ### 1.5 Basic screens for customers and pending vendors (1–2 hrs)
 - [ ] Customer, logged in: show a simple "My Account" page with a placeholder for "My Tickets" (filled in during Phase 5).

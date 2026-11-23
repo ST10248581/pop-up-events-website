@@ -32,17 +32,11 @@ export default function AdminDashboard() {
     setReviewing(id)
     setMessage('')
 
-    const { error } = await supabase.rpc(
-      'review_vendor_application',
-      {
-        application_id: id,
-        const { data, error } = await supabase.rpc('review_vendor_application', {
-  application_id: id,
-  decision,
-  notes: notes[id] || null,
-})
-
-console.log('Vendor approval response:', { data, error })
+    const { error } = await supabase.rpc('review_vendor_application', {
+      application_id: id,
+      decision,
+      notes: notes[id] || null,
+    })
 
     if (error) {
       setMessage('Review failed: ' + error.message)

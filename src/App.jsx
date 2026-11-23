@@ -32,11 +32,9 @@ export default function App() {
   const [user, setUser] = useState(null)
   const [userRole, setUserRole] = useState(null)
   const [checkingUser, setCheckingUser] = useState(true)
-  const [connectionStatus, setConnectionStatus] = useState('Checking connection...')
-
   useEffect(() => {
     if (!supabase) {
-      setConnectionStatus('Supabase settings are missing')
+      console.warn('Supabase settings are missing: add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to .env')
       setCheckingUser(false)
       return
     }
@@ -62,15 +60,10 @@ export default function App() {
 
         if (error) {
           console.error('Profile role lookup failed:', error)
-          setConnectionStatus('Could not load account role: ' + error.message)
           setUserRole(null)
         } else {
-          console.log('Account role:', data.role)
           setUserRole(data.role)
-          setConnectionStatus('Connected as ' + data.role)
         }
-      } else {
-        setConnectionStatus('Please log in to your account.')
       }
 
       if (mounted) setCheckingUser(false)
@@ -92,7 +85,6 @@ export default function App() {
 
       if (error) {
         console.error('Session error:', error)
-        setConnectionStatus('Could not check login session.')
         setCheckingUser(false)
         return
       }
@@ -106,65 +98,71 @@ export default function App() {
     }
   }, [])
 
+  const showDashboard = !checkingUser && user && (userRole === 'admin' || userRole === 'vendor')
+  const closeMenu = () => setMenuOpen(false)
+
+  async function handleLogout() {
+    closeMenu()
+    const { error } = await supabase.auth.signOut()
+    if (error) console.error('Logout failed:', error)
+    window.scrollTo(0, 0)
+  }
+
   return (
     <div className="website">
       <header className="header">
-        <a href="#home" className="logo" aria-label="Pop Up Events home">
+        <a href="#home" className="logo" aria-label="Pop Up Events home" onClick={closeMenu}>
           <img src="/logo.png" alt="Pop Up Events – Creating Moments & Memories" />
         </a>
 
         <button
+          type="button"
           className="menu-button"
+          aria-expanded={menuOpen}
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? 'Close' : 'Menu'}
         </button>
 
         <nav className={menuOpen ? 'nav open' : 'nav'}>
-          <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
-          <a href="#events" onClick={() => setMenuOpen(false)}>Events</a>
-          <a href="#about" onClick={() => setMenuOpen(false)}>About Us</a>
-          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
-          <a href="#register" className="nav-button" onClick={() => setMenuOpen(false)}>Join Us</a>
-          <a href="#login" onClick={() => setMenuOpen(false)}>Log In</a>
+          {showDashboard ? (
+            <a href="#dashboard" onClick={closeMenu}>
+              {userRole === 'admin' ? 'Vendor Applications' : 'My Business'}
+            </a>
+          ) : (
+            <>
+              <a href="#home" onClick={closeMenu}>Home</a>
+              <a href="#events" onClick={closeMenu}>Events</a>
+              <a href="#about" onClick={closeMenu}>About Us</a>
+              <a href="#contact" onClick={closeMenu}>Contact</a>
+            </>
+          )}
+
+          {user ? (
+            <>
+              <span className="nav-user" title={user.email}>{user.email}</span>
+              <button type="button" className="nav-button logout-button" onClick={handleLogout}>
+                Log Out
+              </button>
+            </>
+          ) : (
+            <>
+              <a href="#register" className="nav-button" onClick={closeMenu}>Join Us</a>
+              <a href="#login" onClick={closeMenu}>Log In</a>
+            </>
+          )}
         </nav>
       </header>
 
       <main>
         {checkingUser ? (
-          <p style={{ textAlign: 'center', padding: '20px' }}>
-            Checking account...
-          </p>
-        ) : user && userRole === 'admin' ? (
-          <>
-            <AdminDashboard />
-
-            <button
-              type="button"
-              onClick={() => supabase.auth.signOut()}
-            >
-              Log Out
-            </button>
-          </>
-        ) : user && userRole === 'vendor' ? (
-          <>
-            <VendorDashboard user={user} />
-
-            <button
-              type="button"
-              onClick={() => supabase.auth.signOut()}
-            >
-              Log Out
-            </button>
-          </>
+          <p className="status-message">Checking account...</p>
+        ) : showDashboard ? (
+          <div id="dashboard">
+            {userRole === 'admin' ? <AdminDashboard /> : <VendorDashboard user={user} />}
+          </div>
         ) : (
           <>
-            <div style={{ textAlign: 'center', padding: '10px' }}>
-              <p>{connectionStatus}</p>
-              <p>Logged-in user: {user?.email || 'None'}</p>
-              <p>Account role: {userRole || 'Not loaded'}</p>
-            </div>
-
             <section className="hero" id="home">
               <div className="hero-content">
                 <p className="eyebrow">WELCOME TO POP UP EVENTS</p>
@@ -221,7 +219,12 @@ export default function App() {
                     <h3>{event.name}</h3>
                     <p className="event-date">{event.date}</p>
                     <p>{event.description}</p>
-                    <a href="#contact">Find Out More →</a>
+                    {/* Placeholder until event pages exist (work plan Phase 3) */}
+                    <a
+                      href={`mailto:popupeventsdbn@gmail.com?subject=${encodeURIComponent('Enquiry: ' + event.name)}`}
+                    >
+                      Find Out More →
+                    </a>
                   </article>
                 ))}
               </div>
@@ -237,8 +240,12 @@ export default function App() {
               <a href="#contact" className="primary-button">Get In Touch</a>
             </section>
 
-            <Login />
-            <Register />
+            {!user && (
+              <>
+                <Login />
+                <Register />
+              </>
+            )}
 
             <section className="contact-section" id="contact">
               <p className="eyebrow">LET'S CONNECT</p>
