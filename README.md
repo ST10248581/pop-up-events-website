@@ -54,12 +54,15 @@ Steps to get the site running and finish the brief. The tasks run from the quick
 - [ ] Test all of the above with real admin, vendor and customer accounts once Supabase is connected (Phase 0).
 
 ### 1.5 Basic screens for customers and pending vendors (1–2 hrs)
-- [ ] Customer, logged in: show a simple "My Account" page with a placeholder for "My Tickets" (filled in during Phase 5).
-- [ ] Vendor, pending or declined: show the application status and any admin notes instead of sending them to the homepage.
+- [x] Customer, logged in: show a simple "My Account" page with a placeholder for "My Tickets" (filled in during Phase 5).
+- [x] Vendor, pending or declined: show the application status and any admin notes instead of sending them to the homepage.
+- [ ] Test with real accounts once Supabase is connected. The lookup assumes `vendor_onboarding_applications.user_id`, and the notes column is read as `admin_notes`, `review_notes` or `notes`; confirm both in 1.6. Until then, preview the screens in dev with `?preview=customer`, `?preview=pending` or `?preview=declined`.
 
 ### 1.6 Check that database field names match (1–2 hrs)
 - [ ] Compare the columns in `vendor_onboarding_applications` with what the code reads and writes.
-- [ ] Known mismatch: signup saves `business_email` and `business_description`, but the admin screen reads `email` and `description`. Pick one set of names and update the code or the database to match.
+- [x] Known mismatch: signup saves `business_email` and `business_description`, but the admin screen reads `email` and `description`. Pick one set of names and update the code or the database to match. (Code side done: standardised on `business_*`.)
+- [ ] Once the schema is exported, confirm the table uses `business_email` / `business_phone` / `business_description`, then remove the fallback to the old names in `applicationDetails()` in `src/AdminDashboard.jsx`.
+- [ ] Check the `vendor_profiles` table that `VendorDashboard.jsx` reads and writes. It's not mentioned elsewhere in this plan, and it uses `email` / `phone` / `description`.
 - [ ] Check that the signup trigger creates the `profiles` row and the application row.
 - [ ] Test the full flow: register as a vendor, then the admin approves, then the vendor sees the approved dashboard.
 
@@ -83,10 +86,10 @@ Steps to get the site running and finish the brief. The tasks run from the quick
 ## Phase 2: Account basics (1–2 days)
 
 ### 2.1 Real page routing
-- [ ] Run `npm install react-router-dom`.
-- [ ] Create routes: `/`, `/login`, `/register`, `/account`, `/vendor`, `/admin`, `/events`, `/events/:id`.
-- [ ] Add route guards so `/admin` is for admins only, `/vendor` for vendors only and `/account` for logged-in users.
-- [ ] Add a rewrite rule on the host so deep links don't return 404 (Vercel `vercel.json` or Netlify `_redirects`).
+- [x] Run `npm install react-router-dom`.
+- [x] Create routes: `/`, `/login`, `/register`, `/account`, `/vendor`, `/admin`, `/events`, `/events/:id`.
+- [x] Add route guards so `/admin` is for admins only, `/vendor` for vendors only and `/account` for logged-in users.
+- [x] Add a rewrite rule on the host so deep links don't return 404. Both `vercel.json` and `public/_redirects` (Netlify) are in place; delete whichever one isn't used once the host is chosen in 1.8.
 
 ### 2.2 Password reset
 - [ ] Add a "Forgot password" link that calls `supabase.auth.resetPasswordForEmail`.

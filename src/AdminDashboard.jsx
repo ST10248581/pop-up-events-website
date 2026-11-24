@@ -1,6 +1,18 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
+import { getDevPreview } from './devPreview'
+
+// Signup stores the vendor's details as business_email / business_phone / business_description.
+// TODO(Phase 1.6): once the schema is exported, confirm the table uses these names and drop the
+// fallbacks to the old email / phone / description names.
+function applicationDetails(application) {
+  return {
+    email: application.business_email ?? application.email,
+    phone: application.business_phone ?? application.phone,
+    description: application.business_description ?? application.description,
+  }
+}
 
 export default function AdminDashboard() {
   const [applications, setApplications] = useState([])
@@ -12,6 +24,13 @@ export default function AdminDashboard() {
   async function loadApplications() {
     setLoading(true)
     setMessage('')
+
+    const preview = getDevPreview()
+    if (preview) {
+      setApplications(preview.applications ?? [])
+      setLoading(false)
+      return
+    }
 
     const { data, error } = await supabase
       .from('vendor_onboarding_applications')
@@ -31,6 +50,13 @@ export default function AdminDashboard() {
   async function reviewApplication(id, decision) {
     setReviewing(id)
     setMessage('')
+
+    if (getDevPreview()) {
+      setApplications((current) => current.filter((application) => application.id !== id))
+      setMessage(`Preview only: application ${decision}. Nothing was saved.`)
+      setReviewing(null)
+      return
+    }
 
     const { error } = await supabase.rpc('review_vendor_application', {
       application_id: id,
@@ -76,19 +102,21 @@ export default function AdminDashboard() {
         ) : applications.length === 0 ? (
           <p>There are currently no pending vendor applications.</p>
         ) : (
-          applications.map((application) => (
+          applications.map((application) => {
+            const details = applicationDetails(application)
+            return (
             <div className="vendor-application" key={application.id}>
               <hr />
 
               <h2>{application.business_name}</h2>
 
               <p><strong>Contact:</strong> {application.contact_name}</p>
-              <p><strong>Email:</strong> {application.email}</p>
-              <p><strong>Phone:</strong> {application.phone}</p>
+              <p><strong>Email:</strong> {details.email || 'Not provided'}</p>
+              <p><strong>Phone:</strong> {details.phone || 'Not provided'}</p>
 
               <p>
                 <strong>Business description:</strong><br />
-                {application.description || 'Not provided'}
+                {details.description || 'Not provided'}
               </p>
 
               <p>
@@ -96,7 +124,7 @@ export default function AdminDashboard() {
                 {new Date(application.created_at).toLocaleDateString()}
               </p>
 
-              <label>Private admin notes</label>
+              <label>Notes for the vendor</label>
               <textarea
                 rows="3"
                 value={notes[application.id] || ''}
@@ -106,7 +134,7 @@ export default function AdminDashboard() {
                     [application.id]: e.target.value,
                   })
                 }
-                placeholder="Add notes about this application..."
+                placeholder="Optional. The vendor will see this on their application status page."
               />
 
               <div className="admin-actions">
@@ -133,7 +161,8 @@ export default function AdminDashboard() {
                 </button>
               </div>
             </div>
-          ))
+            )
+          })
         )}
       </div>
     </section>

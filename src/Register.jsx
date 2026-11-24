@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from './supabase'
 
 export default function Register() {
@@ -205,6 +206,10 @@ export default function Register() {
         </form>
 
         {message && <p className="register-message">{message}</p>}
+
+        <p className="form-switch">
+          Already have an account? <Link to="/login">Log in</Link>
+        </p>
       </div>
     </section>
   )

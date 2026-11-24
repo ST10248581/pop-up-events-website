@@ -1,5 +1,6 @@
 
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { supabase } from './supabase'
 
 export default function Login() {
@@ -72,6 +73,10 @@ export default function Login() {
         </form>
 
         {message && <p className="register-message">{message}</p>}
+
+        <p className="form-switch">
+          New to Pop Up Events? <Link to="/register">Create an account</Link>
+        </p>
       </div>
     </section>
   )
