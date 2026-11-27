@@ -92,8 +92,9 @@ Steps to get the site running and finish the brief. The tasks run from the quick
 - [x] Add a rewrite rule on the host so deep links don't return 404. Both `vercel.json` and `public/_redirects` (Netlify) are in place; delete whichever one isn't used once the host is chosen in 1.8.
 
 ### 2.2 Password reset
-- [ ] Add a "Forgot password" link that calls `supabase.auth.resetPasswordForEmail`.
-- [ ] Add a `/reset-password` page that calls `supabase.auth.updateUser({ password })`.
+- [x] Add a "Forgot password" link that calls `supabase.auth.resetPasswordForEmail`. (The link on `/login` opens `/forgot-password`.)
+- [x] Add a `/reset-password` page that calls `supabase.auth.updateUser({ password })`.
+- [ ] Add `<live site>/reset-password` and `http://localhost:5173/reset-password` to Supabase **Auth → URL Configuration → Redirect URLs**, then test the full flow with a real account. Until then, preview in dev: without `.env`, `/forgot-password` shows the "email sent" screen, and `/reset-password?preview=customer` shows the new-password form.
 
 ### 2.3 Auth emails
 - [ ] Customise the Supabase email templates (confirm signup, reset password) with the Pop Up Events branding.

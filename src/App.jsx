@@ -3,6 +3,8 @@ import { Routes, Route, Link, NavLink, Navigate, useLocation, useNavigate } from
 import { supabase } from './supabase'
 import Register from './Register'
 import Login from './Login'
+import ForgotPassword from './ForgotPassword'
+import ResetPassword from './ResetPassword'
 import AdminDashboard from './AdminDashboard'
 import VendorDashboard from './VendorDashboard'
 import MyAccount from './MyAccount'
@@ -225,6 +227,9 @@ export default function App() {
           <Route path="/events/:id" element={<EventDetail />} />
           <Route path="/login" element={<GuestOnly auth={auth}><Login /></GuestOnly>} />
           <Route path="/register" element={<GuestOnly auth={auth}><Register /></GuestOnly>} />
+          <Route path="/forgot-password" element={<GuestOnly auth={auth}><ForgotPassword /></GuestOnly>} />
+          {/* Not GuestOnly: the emailed reset link logs the user in before this page renders. */}
+          <Route path="/reset-password" element={<ResetPassword auth={auth} homePath={homePathFor(auth)} />} />
           <Route
             path="/account"
             element={<RequireAuth auth={auth}>{user && <MyAccount user={user} />}</RequireAuth>}

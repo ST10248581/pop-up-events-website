@@ -67,6 +67,10 @@ export default function Login() {
             required
           />
 
+          <Link to="/forgot-password" state={{ email: email.trim() }} className="forgot-link">
+            Forgot password?
+          </Link>
+
           <button type="submit" disabled={loading}>
             {loading ? 'Logging In...' : 'Log In'}
           </button>
